@@ -5,6 +5,7 @@ from PyQt6.QtCore import Qt, QPoint, QSettings
 from PyQt6.QtGui import QAction
 
 import subprocess
+from core.manager import handle
 
 class SystemPromptDialog(QDialog):
     def __init__(self, parent=None, prompt_manager=None):
@@ -456,7 +457,8 @@ class MainWindow(QMainWindow):
 
         # 💬 CHAT RESPONSE - اتصال به مدل زبانی
         try:
-            self.update_log(f"فعلا چیزی برای گفتن ندارم عزیزم")
+            resp = handle(instructions)
+            self.update_log(resp)
         except Exception as e:
             self.update_log(f"Assistant: ⚠️ Failed to get response.\n{e}")
         finally:

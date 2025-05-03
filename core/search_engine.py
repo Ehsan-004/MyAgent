@@ -27,22 +27,35 @@ def convert_filetime_to_datetime(filetime):
     return WINDOWS_EPOCH + datetime.timedelta(seconds=microsecs)
 
 
-def build_search_query(keywords: list[str], allowed_paths = "C:\\", type_name = None) -> str:
+def build_search_query(keywords: list[str], allowed_path = "C:\\", type_name = None) -> str:
     query_parts = []
 
-    for key in keywords:
-        query_parts.append(f"{allowed_paths} type:{type_name} {key}")
+    if type_name == "app":
+        for key in keywords:
+            query_parts.append(f"{allowed_path} ext:exe {key}")
+    elif type_name == "audio":
+        for key in keywords:
+            query_parts.append(f"{allowed_path} ext:mp3 {key}")
+    elif type_name == "video":
+        for key in keywords:
+            query_parts.append(f"{allowed_path} ext:mp4;mkv;avi {key}")
+    else:
+        for key in keywords:
+            query_parts.append(f"{allowed_path} {type_name}: {key}")
+    
     
     # همه چی رو با OR ترکیب کن
     final_query = " | ".join(query_parts)
 
     print(f"[DEBUG] Final Query: {final_query}")  
     return final_query
+    # return "ext:mp4;mkv;avi friends | ext:mp4;mkv;avi 3 | ext:mp4;mkv;avi 2"
 
 
 # ----- File search function -----
-def search_raw_files(keywords: list[str], typing: str , max_results: int = 1000) -> list[dict]:
+def search_files(keywords: list[str], typing: str , max_results: int = 1000) -> list[dict]:
     query = build_search_query(keywords=keywords, type_name=typing)
+    print(f"query is : {query}")
 
     everything_dll.Everything_SetSearchW(query)
     everything_dll.Everything_SetRequestFlags(
@@ -53,23 +66,24 @@ def search_raw_files(keywords: list[str], typing: str , max_results: int = 1000)
     num_results = min(everything_dll.Everything_GetNumResults(), max_results)
 
     filename_buf = ctypes.create_unicode_buffer(260)
-    date_modified = ctypes.c_ulonglong(1)
-    file_size = ctypes.c_ulonglong(1)
+    # date_modified = ctypes.c_ulonglong(1)
+    # file_size = ctypes.c_ulonglong(1)
 
     results = []
 
     for i in range(num_results):
         everything_dll.Everything_GetResultFullPathNameW(i, filename_buf, 260)
-        everything_dll.Everything_GetResultDateModified(i, ctypes.byref(date_modified))
-        everything_dll.Everything_GetResultSize(i, ctypes.byref(file_size))
+        # everything_dll.Everything_GetResultDateModified(i, ctypes.byref(date_modified))
+        # everything_dll.Everything_GetResultSize(i, ctypes.byref(file_size))
 
         full_path = Path(filename_buf.value)
-        results.append({
-            "name": full_path.name,
-            "path": str(full_path),
-            "size": file_size.value,
-            # "modified": convert_filetime_to_datetime(date_modified)
-        })
+        results.append(full_path)
+        # results.append({
+        #     # "name": full_path.name,
+        #     "path": str(full_path),
+        #     # "size": file_size.value,
+        #     # "modified": convert_filetime_to_datetime(date_modified)
+        # })
 
     return results
 
@@ -81,6 +95,6 @@ from pprint import pprint
 if __name__ == "__main__":
     # folders = search_files(['telegram'], max_results=10000, type_name=['exe'])
     # pprint(folders)
-    print(search_raw_files(["telegram"], "app"))
+    pprint(search_files(["telegram"], "app"))
     
     

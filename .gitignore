@@ -1,3 +1,5 @@
 config/
 config/*
 config/model.py
+tempCodeRunnerFile.py
+*.pyc
