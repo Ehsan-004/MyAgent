@@ -97,10 +97,10 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         # Initialize theme settings
-        self.settings = QSettings('Grunty', 'Preferences')
+        self.settings = QSettings('MyAgent', 'Preferences')
         self.dark_mode = self.settings.value('dark_mode', True, type=bool)
         
-        self.setWindowTitle("Grunty 👨💻")
+        self.setWindowTitle("MyAgent 👨💻")
         self.setGeometry(100, 100, 400, 600)
         self.setMinimumSize(400, 500)  # Increased minimum size for better usability
 
@@ -134,7 +134,7 @@ class MainWindow(QMainWindow):
         title_bar_layout.setContentsMargins(10, 5, 10, 5)
 
         # Add Grunty title with robot emoji
-        title_label = QLabel("Grunty 🤖")
+        title_label = QLabel("MyAgent 🤖")
         title_label.setObjectName("titleLabel")
         title_bar_layout.addWidget(title_label)
 
@@ -214,7 +214,7 @@ class MainWindow(QMainWindow):
         """)
         self.progress_bar.hide()
         container_layout.addWidget(self.progress_bar)
-
+   
         # Input section container - Fixed height at bottom
         input_section = QWidget()
         input_section.setObjectName("input_section")

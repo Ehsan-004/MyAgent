@@ -22,8 +22,8 @@ def query_model(message: str) -> dict:
 یک شی json با این فیلد ها برگردان
 {
   "status": "ok",
-  "action": "delete | move | play | open(just files) | rename | run(applications)",
-  "type": "video | pic | audio | app",
+  "action": "delete | move | play | open(just files except video and image) | rename | run(applications) | cdir(open directory)",
+  "type": "video | pic | audio | app | folder",
   "keys": [یک لیست از کلمات کلیدی که کاربر گفته است، کلمات مهم را جدا کن و هر آیتم فقط یک کلمه باشد],
 }
 
@@ -36,6 +36,12 @@ Output: ["friends", "3", "5"]
 
 Only important keywords, no combinations.
 Respond only with a valid JSON. No explanations.
+اگر دیدی کاربر دارد با تو گفتگو میکند آن را ادامه بده و با او به صورتی امن گفتگو کن و در این قالب جواب بده:
+{
+    status="ok",
+    action= "conversation",
+    responce="جواب صمیمی به گفتگو"
+}
 """
 
     response = client.chat.completions.create(

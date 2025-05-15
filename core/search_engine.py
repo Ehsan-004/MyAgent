@@ -2,6 +2,7 @@ import ctypes
 import struct
 import datetime
 from pathlib import Path
+from config.files import user_path
 
 # ----- Constants for Everything flags -----
 EVERYTHING_REQUEST_FILE_NAME = 0x00000001
@@ -27,7 +28,7 @@ def convert_filetime_to_datetime(filetime):
     return WINDOWS_EPOCH + datetime.timedelta(seconds=microsecs)
 
 
-def build_search_query(keywords: list[str], allowed_path = "C:\\", type_name = None) -> str:
+def build_search_query(keywords: list[str], allowed_path = user_path, type_name = None) -> str:
     query_parts = []
 
     if type_name == "app":
@@ -35,10 +36,13 @@ def build_search_query(keywords: list[str], allowed_path = "C:\\", type_name = N
             query_parts.append(f"{allowed_path} ext:exe {key}")
     elif type_name == "audio":
         for key in keywords:
-            query_parts.append(f"{allowed_path} ext:mp3 {key}")
+            query_parts.append(f"{allowed_path} ext:mp3;aac {key}")
     elif type_name == "video":
         for key in keywords:
             query_parts.append(f"{allowed_path} ext:mp4;mkv;avi {key}")
+    elif type_name == "folder":
+        for key in keywords:
+            query_parts.append(f"{allowed_path} folder: {key}")
     else:
         for key in keywords:
             query_parts.append(f"{allowed_path} {type_name}: {key}")
@@ -88,13 +92,9 @@ def search_files(keywords: list[str], typing: str , max_results: int = 1000) -> 
     return results
 
 
-
-# ----- File search function -----
 from pprint import pprint
 
 if __name__ == "__main__":
-    # folders = search_files(['telegram'], max_results=10000, type_name=['exe'])
-    # pprint(folders)
     pprint(search_files(["telegram"], "app"))
     
     
